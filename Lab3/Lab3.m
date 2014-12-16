@@ -1,12 +1,12 @@
 %% Lab3
 %% Gaussian Filters
-gfilter = [0 0  0 0 0;
-           0 1  8 1 0;
-           0 8 40 8 0;
-           0 1  8 1 0;
-           0 0  0 0 0];
+gfilter = [1 2  3 2 1;
+           2 4  5 4 2;
+           3 5 20 5 3;
+           2 4  5 4 2;
+           1 2  3 2 1]/88;
 %% Read Image
-img = imread('images\board.jpg');
+img = imread('images\biking.png');
 gimg = rgb2gray(img);
 
 [hEdges,vEdges,sumEdges,magEdges,rDir,dir] = sobel(gimg);
