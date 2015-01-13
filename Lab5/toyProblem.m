@@ -1,4 +1,4 @@
-function toyProblem()
+function [tp, fp, tn, fn, tpr, fpr] = toyProblem()
 % toyProblem.m
 % Written by Matthew Boutell, 2006.
 % Feel free to distribute at will.
@@ -20,7 +20,7 @@ seedTest = 138;
 % Add your code here.
 % KNOWN ISSUE: the linear decision boundary doesn't work 
 % for this data set at all. Don't know why...
-net = svm(size(xTrain,2),'rbf', [10], 50);
+net = svm(size(xTrain,2),'rbf', [5], 41);
 net = svmtrain(net, xTrain, yTrain);
 
 f1 = figure;
@@ -34,21 +34,16 @@ title(['SVM with RBF kernel: decision boundary (black) plus Support' ...
 % pause
 [Y, Y1] = svmfwd(net, xTest);
 
-tp = (Y == 1) & (yTest == 1);
-tp = sum(tp)
-fn = (Y == -1) & (yTest == 1);
-fn = sum(fn)
-fp = (Y == 1) & (yTest == -1);
-fp = sum (fp)
-tn = (Y == -1) & (yTest == -1);
-tn = sum(tn)
-tpr = tp / (tp + fn)
-fpr = fp / (fp + tn)
-
+tp = sum((Y == 1) & (yTest == 1));
+fn = sum((Y == -1) & (yTest == 1));
+fp = sum((Y == 1) & (yTest == -1));
+tn = sum((Y == -1) & (yTest == -1));
+tpr = tp / (tp + fn);
+fpr = fp / (fp + tn);
 
 % Run this on a trained network to see the resulting boundary 
 % (as in the demo)
-plotboundary(net, [0,20], [0,20]);
+% plotboundary(net, [0,20], [0,20]);
 
 function plotdata(X, Y, x1ran, x2ran)
 % PLOTDATA - Plot 2D data set
