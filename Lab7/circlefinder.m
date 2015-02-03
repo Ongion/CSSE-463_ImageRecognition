@@ -6,6 +6,10 @@ function [mod_image, voting] = circlefinder(image)
     output = zeros(w,h);
     voting = zeros(w,h,41);
     mag = mag > 10;
+    mag(1,:) = 0;
+    mag(w,:) = 0;
+    mag(:,1) = 0;
+    mag(:,h) = 0;
     [r,c] = find(mag==1);
     for k = 1:length(r)
         for t = 1:pi/100:pi
