@@ -1,14 +1,17 @@
-function [mod_image, voting] = circlefinder(image,minRad,maxRad)
+function [voting] = circlefinder(image,bucketScale,minRad,maxRad)
 %CIRCLEFINDER Summary of this function goes here
 %   Detailed explanation goes here
-    if (nargin == 1)
+    if (nargin < 2)
+        bucketScale = 3;
+    end
+    if (nargin < 4)
         minRad = 10;
         maxRad = 50;
     end
     [h, v, sum, mag, rdir, dir] = sobel(image);
     [w, h] = size(image);
     output = zeros(w,h);
-    voting = zeros(w,h,maxRad-minRad+1);
+    voting = uint16(zeros(ceil(w/bucketScale),ceil(h/bucketScale),maxRad-minRad+1));
     mag = mag > 10;
     mag(1,:) = 0;
     mag(w,:) = 0;
@@ -24,18 +27,11 @@ function [mod_image, voting] = circlefinder(image,minRad,maxRad)
             for rad = minRad:maxRad
                 dx = rad*cos(t);
                 dy = rad*sin(t);
-                x1 = uint16(c(k) + dx)+1;
-                y1 = uint16(r(k) - dy)+1;
-                if x1 > h
-                    x1 = h;
-                end
-                if y1 > w
-                    y1 = w;
-                end
+                x1 = uint16(max(min(c(k) + dx+1,h)/bucketScale,1));
+                y1 = uint16(max(min(r(k) - dy+1,w)/bucketScale,1));
                 voting(y1,x1,rad-(minRad-1)) = voting(y1,x1,rad-(minRad-1))+1;
             end
         end
     end
-    mod_image = 0;
 end
 
