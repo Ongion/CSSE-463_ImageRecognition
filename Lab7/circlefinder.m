@@ -1,10 +1,14 @@
-function [mod_image, voting] = circlefinder(image)
+function [mod_image, voting] = circlefinder(image,minRad,maxRad)
 %CIRCLEFINDER Summary of this function goes here
 %   Detailed explanation goes here
+    if (nargin == 1)
+        minRad = 10;
+        maxRad = 50;
+    end
     [h, v, sum, mag, rdir, dir] = sobel(image);
     [w, h] = size(image);
     output = zeros(w,h);
-    voting = zeros(w,h,41);
+    voting = zeros(w,h,maxRad-minRad+1);
     mag = mag > 10;
     mag(1,:) = 0;
     mag(w,:) = 0;
@@ -12,28 +16,23 @@ function [mod_image, voting] = circlefinder(image)
     mag(:,h) = 0;
     [r,c] = find(mag==1);
     for k = 1:length(r)
-        for t = 1:pi/100:pi
-            for rad = 10:50
+        % optimize searching based on dir
+        minDir = double(dir(r(k),c(k)))*pi/127+pi-pi/8;
+        maxDir = double(dir(r(k),c(k)))*pi/127+pi+pi/8;
+        %for t = 0:pi/100:2*pi
+        for t = minDir:pi/100:maxDir
+            for rad = minRad:maxRad
                 dx = rad*cos(t);
                 dy = rad*sin(t);
                 x1 = uint16(c(k) + dx)+1;
-                x2 = uint16(c(k) - dx)+1;
-                y1 = uint16(r(k) + dy)+1;
-                y2 = uint16(r(k) - dy)+1;
+                y1 = uint16(r(k) - dy)+1;
                 if x1 > h
                     x1 = h;
-                end
-                if x2 > h
-                    x2 = h;
                 end
                 if y1 > w
                     y1 = w;
                 end
-                if y2 > w
-                    y2 = w;
-                end
-                voting(y1,x1,rad-9) = voting(y1,x1,rad-9)+1;
-                voting(y2,x2,rad-9) = voting(y2,x2,rad-9)+1;
+                voting(y1,x1,rad-(minRad-1)) = voting(y1,x1,rad-(minRad-1))+1;
             end
         end
     end
